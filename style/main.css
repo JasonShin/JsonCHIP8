@@ -1,0 +1,56 @@
+body{
+    background-color: #111122;
+}
+
+#Container{
+    width: 800px;
+    margin: 0px auto;
+    color: white;
+}
+
+#CenterContainer{
+    width: 640px;
+    height: 320px;
+}
+#Author{
+
+    font-size: 10px;
+    margin-left: 600px;
+}
+
+#MainCanvas{
+
+}
+
+#GameList > thead{
+    background-color: #203d58;
+}
+
+.gameItem{
+    cursor: pointer;
+}
+
+
+.gameItem:hover{
+    background-color: #6b859f;
+}
+.gameStability{
+    width: 200px;
+}
+
+.stabilityImage{
+    height: 13px;
+    margin-right: 5px;
+}
+
+#Menu{
+
+    width: 640px;
+}
+
+#Menu > button{
+    list-style: none;
+    float: left;
+    margin-right: 20px;
+
+}

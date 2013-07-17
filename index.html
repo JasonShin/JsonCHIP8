@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="style/main.css">
+    <link rel="stylesheet" type="text/css" href="Kickstarter/css/kickstart.css">
+</head>
+
+<body>
+<div id="Container">
+    <span id="Author">Jason Shin</span>
+    <div id="CenterContainer">
+
+    </div>
+    <div id="DebugPanel"></div>
+
+
+    <div id="Menu">
+        <button class="green loadGames">Load Games</button>
+        <button class="orange pause">Pause</button>
+        <button class="orange resume">Resume</button>
+    </div>
+
+    <div>
+        <div class="col_8 column">
+            <h4>First update 17/07/2013</h4>
+            <p>This project was started for fun, also I wanted to experience on building a simple emulator so I can move on and
+                develop SNES emulator</p>
+            <p>There are few unknown bugs haven't been resolved yet, which are causing few games to be unplayable but many games are
+                working fine. I suspect this bug is related to V[x] register values but I cannot confirm this yet.</p>
+
+            <p>Feedbacks are always welcome and I would appreciate them all as I want to improve this program =D..<br>
+                Send them all at <a href="mailto:visualbbasic@gmail.com">visualbbasic@gmail.com</a>
+            </p>
+        </div>
+    </div>
+</div>
+<script src="Kickstarter/js/kickstart.js"></script>
+<script src="Logger.js"></script>
+<script src="MySound.js"></script>
+<script src="Graphics.js"></script>
+<script src="CPU.js"></script>
+<script src="Chip8.js"></script>
+<script src="Input.js"></script>
+<script>
+    //INIT AND GUI PROGRAMS
+    (function () {
+        "use strict";
+
+        var container, chip8;
+
+        var gameList = [
+            ["Stable", "Tetris"],
+            ["Stable", "Invaders"],
+            ["Stable", "Missile"],
+
+            ["Stable", "Maze"],
+            ["Stable", "Brix"],
+            ["Stable", "Pong"],
+            ["Stable", "Pong2"],
+            ["Unstable", "TicTac"],
+            ["Unstable", "Connect4"],
+            ["Unstable", "Tank"],
+            ["Unstable", "15Puzzle"]
+        ];
+        var menuHeader = "Welcome to JSON-Chip8 1.0 -  Select a game to play";
+
+
+
+        function addButtonEvents() {
+            var menu = document.getElementById("Menu");
+            var buttons = menu.getElementsByTagName("button");
+            addEvent(buttons, "click", handleMenu);
+        }
+
+        function addGameListEvents() {
+            var gameContainer = document.getElementById("GameList");
+            var myGames = gameContainer.getElementsByTagName("tbody")[0].getElementsByClassName("gameItem");
+            addEvent(myGames, "click", handleGame);
+        }
+
+
+        function addEvent(nodeList, event, callback) {
+            for (var i = 0; i < nodeList.length; i++) {
+                nodeList[i].addEventListener(event, callback, false);
+            }
+        }
+
+        function handleMenu(event) {
+            //reset chip8 when menu is visible
+            var curClass = this.getAttribute("class");
+            if (curClass.indexOf("loadGames") !== -1) {
+                resetChip();
+                loadGameList();
+            } else if (curClass.indexOf("loadRandom") !== -1) {
+                console.log("load random");
+            } else if (curClass.indexOf("pause") !== -1) {
+                if (chip8 != undefined) {
+                    chip8.stopLoop();
+                }
+            }
+            else if (curClass.indexOf("resume") !== -1) {
+                if (chip8 != undefined) {
+                    chip8.emulateCycle();
+                }
+            }
+        }
+
+
+        function loadGameList() {
+            resetContainer();
+            container.style.overflowY = "scroll";
+            var html = "<div>"+menuHeader+"</div><br>";
+
+            html += " <table id='GameList' cellpadding='0' cellspacing='0'>";
+            html += "<thead>" +
+                    "<tr class='alt first last'>" +
+
+                    "<th>stability</th>" +
+                    "<th>Name</th>" +
+                    "</tr>" +
+                    "</thead>"
+            html + "<tbody id='GameListBody'>";
+            for (var row = 0; row < gameList.length; row++) {
+                var stability = gameList[row][0];
+                var name = gameList[row][1];
+                var stableIMG;
+
+                if (stability.toLowerCase() === "unstable") {
+                    stableIMG = ""
+                }
+                html += "<tr class='gameItem'>" +
+                        "<th class='gameStability'><img class='stabilityImage' src='Image/" + (stability.toLowerCase() === "unstable" ? "unstable.png" : "stable.png") + "' alt='stability'>" + gameList[row][0] + "</th>" +
+                        "<th class='gameName'>" + gameList[row][1] + "</th>" +
+                        "</tr>";
+
+            }
+
+            html += "</tbody>";
+            html += "</html>";
+
+            container.innerHTML = html;
+
+            addGameListEvents();
+
+        }
+
+
+        function handleGame(event) {
+            resetContainer();
+            container.innerHTML = "<canvas id='MainCanvas'></canvas>";
+            chip8 = new CHIP_8();
+            var ganmeNameNode = this.getElementsByClassName("gameName")[0];
+
+            var gameName = ganmeNameNode.textContent ||  ganmeNameNode.innerText;
+            chip8.start(gameName.toUpperCase());
+            container.style.overflowY = "";
+        }
+
+
+        function resetContainer() {
+            container.innerHTML = "";
+        }
+
+        function resetChip() {
+            if (chip8 != undefined) {
+                chip8.reset();
+            }
+        }
+
+        (function() {
+            container = document.getElementById("CenterContainer");
+            addButtonEvents();
+            loadGameList();
+
+        })();
+
+
+    })();
+</script>
+</body>
+</html>
